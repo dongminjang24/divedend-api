@@ -58,10 +58,7 @@ public class YahooFinanceScraper implements Scraper{
 				int day = Integer.parseInt(split[1].replace(",", ""));
 				int year = Integer.parseInt(split[2]);
 				String dividend = split[3];
-				dividends.add(DividendDto.builder()
-					.localDateTime(LocalDateTime.of(year, monthNumber, day, 0, 0))
-					.dividend(dividend)
-					.build());
+				dividends.add(new DividendDto(LocalDateTime.of(year, monthNumber, day, 0, 0),dividend));
 
 			}
 			scrapedResultDto.setDividendDtoList(dividends);
@@ -79,10 +76,7 @@ public class YahooFinanceScraper implements Scraper{
 
 			Element titleElement = document.getElementsByTag("h1").get(1);
 			String title = titleElement.text().split("\\(")[0].trim();
-			return CompanyDto.builder()
-				.ticker(ticker)
-				.name(title)
-				.build();
+			return new CompanyDto(ticker,title);
 
 		} catch (Exception e) {
 			e.printStackTrace();

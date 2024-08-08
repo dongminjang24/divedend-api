@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.*;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import com.dividend.dividend.persist.entity.Dividend;
 import com.dividend.dividend.persist.model.CompanyDto;
 import com.dividend.dividend.persist.model.DividendDto;
 import com.dividend.dividend.persist.model.ScrapedResultDto;
+import com.dividend.dividend.persist.model.constants.CacheKey;
 import com.dividend.dividend.persist.repository.CompanyRepository;
 import com.dividend.dividend.persist.repository.DividendRepository;
 import com.dividend.dividend.scraper.Scraper;
@@ -28,6 +30,9 @@ public class ScraperScheduler {
 	private final Scraper yahooFinanaceScraper;
 	private final DividendRepository dividendRepository;
 
+
+	// redis에 있는 finance prefix로 되어있는 캐싱값 지워짐.
+	@CacheEvict(value = CacheKey.PREFIX_FINANCE,allEntries = true)
 	@Scheduled(cron = "${scheduler.scrape.yahoo}")
 	public void yahooFinanceScheduling() {
 		log.info("scraping scheduler is started");
@@ -36,10 +41,8 @@ public class ScraperScheduler {
 
 		//회사마다 배당 금 정보를 새로 스크래핑
 		for (Company company : companies) {
-			ScrapedResultDto scrapedResultDto = yahooFinanaceScraper.scrap(CompanyDto.builder()
-				.ticker(company.getTicker())
-				.name(company.getName())
-				.build());
+			ScrapedResultDto scrapedResultDto = yahooFinanaceScraper.scrap(
+				new CompanyDto(company.getTicker(), company.getName()));
 			// 스크래핑한 배당금 정보 중
 			scrapedResultDto.getDividendDtoList().stream()
 				.map(e ->

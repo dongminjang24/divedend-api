@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import com.dividend.dividend.exception.NoCompanyException;
 import com.dividend.dividend.persist.entity.Company;
 import com.dividend.dividend.persist.entity.Dividend;
 import com.dividend.dividend.persist.model.CompanyDto;
@@ -84,5 +85,18 @@ public class CompanyService {
 
 	public void deleteAutoCompleteKeyword(String keyword) {
 		trie.remove(keyword);
+	}
+
+	@Transactional
+	public String deleteCompany(String ticker) {
+		Company company = this.companyRepository.findByTicker(ticker).orElseThrow(
+			NoCompanyException::new
+		);
+
+		this.dividendRepository.deleteByCompanyId(company.getId());
+		this.companyRepository.delete(company);
+
+		this.deleteAutoCompleteKeyword(company.getName());
+		return company.getName();
 	}
 }

@@ -14,5 +14,7 @@ import com.dividend.dividend.persist.entity.Dividend;
 public interface DividendRepository extends JpaRepository<Dividend,Long> {
 	List<Dividend> findAllByCompanyId(Long companyId);
 
+	void deleteByCompanyId(Long companyId);
+
 	boolean existsByCompanyIdAndLocalDateTime(Long companyId, LocalDateTime localDateTime);
 }

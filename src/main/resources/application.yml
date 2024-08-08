@@ -19,7 +19,15 @@ spring:
     url: jdbc:h2:mem:dongmin;DB_CLOSE_DELAY=-1
     username: sa
     password:
+  jwt:
+    secret: 7L2U7L2U7JW8Le2VreyDgeqxtOqwle2VmOqzoOyVhO2UhOyngOunkOqzoOyYpOuemOyYpOuemOyCtOyVhOudvOyCrOueke2VnOuLpAo=
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 scheduler:
   scrape:
-    yahoo: 0/5 * * * * *
+    yahoo: 0 0 0 * * *
+
+
